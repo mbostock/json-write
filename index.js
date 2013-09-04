@@ -1,11 +1,12 @@
-var stream = require("stream");
+var stream = require("stream"),
+    eol = require("os").EOL;
 
 module.exports = function() {
   var transform = new stream.Transform({objectMode: true});
 
   transform._transform = function(value, encoding, callback) {
     visit(value);
-    transform.push("\n");
+    transform.push(eol);
     callback();
   };
 
