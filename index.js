@@ -1,63 +1,39 @@
-var visit = require("./visit"),
-    readable = require("stream").Readable;
+var stream = require("stream");
 
 module.exports = function() {
-  var reader = new readable,
-      end = false;
+  var transform = new stream.Transform({objectMode: true});
 
-  reader._read = read;
+  transform._transform = function(value, encoding, callback) {
+    visit(value);
+    transform.push("\n");
+    callback();
+  };
 
-  function read() {
-    if (!visitor.pop() && end) {
-      reader.push(null);
+  function visit(value) {
+    if (typeof value === "object") {
+      if (!value) return void transform.push("null");
+      if (Array.isArray(value)) {
+        transform.push("[");
+        var i = 0, n = value.length;
+        if (n) visit(value[i]);
+        while (++i < n) transform.push(","), visit(value[i]);
+        transform.push("]");
+      } else {
+        transform.push("{");
+        var separate = false;
+        for (var key in value) {
+          if (separate) transform.push(",");
+          else separate = true;
+          transform.push(JSON.stringify(key));
+          transform.push(":");
+          visit(value[key]);
+        }
+        transform.push("}");
+      }
+    } else {
+      transform.push(JSON.stringify(value));
     }
   }
 
-  var visitor = visit({
-    arrayStart: function() {
-      reader.push("[");
-    },
-    arrayEnd: function() {
-      reader.push("]");
-    },
-    objectStart: function() {
-      reader.push("{");
-    },
-    objectEnd: function() {
-      reader.push("}");
-    },
-    key: function(string) {
-      reader.push(string);
-      reader.push(":");
-    },
-    primitive: function(string) {
-      reader.push(string);
-    },
-    separator: function() {
-      reader.push(",");
-    },
-    terminator: function() {
-      reader.push("\n");
-    }
-  });
-
-  var o = {
-    write: function(value) {
-      visitor.push(value);
-      process.nextTick(read);
-      return o;
-    },
-    end: function(value) {
-      if (arguments.length) visitor.push(value);
-      end = true;
-      process.nextTick(read);
-      return o;
-    },
-    pipe: function(writer, options) {
-      reader.pipe(writer, options);
-      return o;
-    }
-  };
-
-  return o;
+  return transform;
 };
