@@ -5,7 +5,7 @@ A stream-based JSON serializer, useful for serializing very large JSON objects w
 ```js
 var jsonWrite = require("json-write");
 
-var writer = jsonWriter();
+var writer = jsonWrite();
 writer.pipe(process.stdout);
 writer.write({type: "Topology", objects: [1,2]});
 writer.end({type: "Topology", objects: [1,2]});
