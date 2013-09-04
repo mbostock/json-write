@@ -1,0 +1,17 @@
+{
+  "name": "json-writer",
+  "version": "0.0.1",
+  "description": "A stream-based serializer for JSON.",
+  "keywords": [
+    "json"
+  ],
+  "author": {
+    "name": "Mike Bostock",
+    "url": "http://bost.ocks.org/mike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/mbostock/json-writer.git"
+  },
+  "main": "./index.js"
+}
