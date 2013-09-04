@@ -44,6 +44,7 @@ module.exports = function(listener) {
         else listener.arrayEnd();
         frame = stack.pop();
       }
+      if (frame === top) listener.terminator();
       return true;
     }
   };

@@ -3,7 +3,6 @@ var visit = require("./visit"),
 
 module.exports = function() {
   var reader = new readable,
-      depth = 0,
       end = false;
 
   reader._read = read;
@@ -16,20 +15,16 @@ module.exports = function() {
 
   var visitor = visit({
     arrayStart: function() {
-      ++depth;
       reader.push("[");
     },
     arrayEnd: function() {
       reader.push("]");
-      if (!--depth) reader.push("\n");
     },
     objectStart: function() {
-      ++depth;
       reader.push("{");
     },
     objectEnd: function() {
       reader.push("}");
-      if (!--depth) reader.push("\n");
     },
     key: function(string) {
       reader.push(string);
@@ -37,10 +32,12 @@ module.exports = function() {
     },
     primitive: function(string) {
       reader.push(string);
-      if (!depth) reader.push("\n");
     },
     separator: function() {
       reader.push(",");
+    },
+    terminator: function() {
+      reader.push("\n");
     }
   });
 
