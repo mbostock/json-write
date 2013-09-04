@@ -1,6 +1,6 @@
 {
   "name": "json-write",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A stream-based serializer for JSON.",
   "keywords": [
     "json"
