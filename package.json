@@ -1,5 +1,5 @@
 {
-  "name": "json-writer",
+  "name": "json-write",
   "version": "0.0.1",
   "description": "A stream-based serializer for JSON.",
   "keywords": [
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/mbostock/json-writer.git"
+    "url": "http://github.com/mbostock/json-write.git"
   },
   "main": "./index.js"
 }
