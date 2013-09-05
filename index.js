@@ -2,37 +2,57 @@ var stream = require("stream"),
     eol = require("os").EOL;
 
 module.exports = function() {
-  var transform = new stream.Transform({objectMode: true});
+  var transform = new stream.Transform({objectMode: true}),
+      bufferSize = 16 * 1024,
+      bufferIndex = 0,
+      buffer = new Buffer(bufferSize);
 
   transform._transform = function(value, encoding, callback) {
     visit(value);
+    flush();
     transform.push(eol);
     callback();
   };
 
   function visit(value) {
     if (typeof value === "object") {
-      if (!value) return void transform.push("null");
+      if (!value) return void write("null");
       if (Array.isArray(value)) {
-        transform.push("[");
+        write("[");
         var i = 0, n = value.length;
         if (n) visit(value[i]);
-        while (++i < n) transform.push(","), visit(value[i]);
-        transform.push("]");
+        while (++i < n) write(","), visit(value[i]);
+        write("]");
       } else {
-        transform.push("{");
+        write("{");
         var separate = false;
         for (var key in value) {
-          if (separate) transform.push(",");
+          if (separate) write(",");
           else separate = true;
-          transform.push(JSON.stringify(key));
-          transform.push(":");
+          write(JSON.stringify(key));
+          write(":");
           visit(value[key]);
         }
-        transform.push("}");
+        write("}");
       }
     } else {
-      transform.push(JSON.stringify(value));
+      write(JSON.stringify(value));
+    }
+  }
+
+  function flush() {
+    if (bufferIndex) {
+      transform.push(buffer.slice(0, bufferIndex));
+      buffer = new Buffer(bufferSize);
+      bufferIndex = 0;
+    }
+  }
+
+  function write(chunk) {
+    bufferIndex += buffer.write(chunk, bufferIndex);
+    while (Buffer._charsWritten < chunk.length) {
+      flush();
+      bufferIndex = buffer.write(chunk = chunk.substring(Buffer._charsWritten));
     }
   }
 
