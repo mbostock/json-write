@@ -1,0 +1,13 @@
+#!/bin/bash
+
+function test()
+{
+   if [[ $1 -eq 0 ]]
+   then
+      echo -e "\x1B[1;32m✓ $2\x1B[0m"
+   else
+      echo -e "\x1B[1;31m✗ $2\x1B[0m"
+   fi
+}
+
+[ "$(test/generate-file)" = "49995000" ]; test $? "generate-file generates an entire file"

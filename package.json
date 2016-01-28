@@ -1,17 +1,23 @@
 {
   "name": "json-write",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "A stream-based serializer for JSON.",
   "keywords": [
-    "json"
+    "json",
+    "stream"
   ],
+  "homepage": "https://github.com/mbostock/json-write",
+  "license": "BSD-3-Clause",
   "author": {
     "name": "Mike Bostock",
     "url": "http://bost.ocks.org/mike"
   },
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/mbostock/json-write.git"
   },
-  "main": "./index.js"
+  "scripts": {
+    "test": "test/run-tests && eslint index.js lib"
+  }
 }

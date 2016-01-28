@@ -49,11 +49,19 @@ module.exports = function() {
   }
 
   function write(chunk) {
-    bufferIndex += buffer.write(chunk, bufferIndex);
-    while (Buffer._charsWritten < chunk.length) {
+    var length = Buffer.byteLength(chunk);
+
+    // Do we need a bigger buffer to fit this chunk?
+    if (length > bufferSize) {
       flush();
-      bufferIndex = buffer.write(chunk = chunk.substring(Buffer._charsWritten));
+      while (length > bufferSize) bufferSize *= 2;
+      buffer = new Buffer(bufferSize);
     }
+
+    // Or would it fit if we just flush?
+    else if (length + bufferIndex > bufferSize) flush();
+
+    bufferIndex += buffer.write(chunk, bufferIndex);
   }
 
   return transform;

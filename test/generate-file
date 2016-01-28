@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+var fs = require("fs"),
+    path = require("path"),
+    jsonWrite = require("../");
+
+var n = 10000,
+    output = new Array(n),
+    i;
+
+for (i = 0; i < n; ++i) {
+  output[i] = {"foo": i};
+}
+
+var writer = jsonWrite();
+writer.pipe(fs.createWriteStream(path.join("test", "file.json"), "utf8")).on("close", closed);
+writer.end(output);
+
+function closed() {
+  var input = require(path.join(process.cwd(), "test", "file.json")), sum = 0;
+  for (i = 0; i < n; ++i) sum += input[i].foo;
+  console.log(sum);
+}
